@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대학생 알바 추천</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --ink: #1c1c2e;
+    --paper: #f5f4f0;
+    --card: #ffffff;
+    --muted: #888799;
+    --border: #e2e0da;
+    --accent: #5348d4;
+    --accent-light: #eeecfd;
+    --tag-bg: #f0eefc;
+    --shadow: 0 2px 16px rgba(28,28,46,0.07);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--ink);
+    padding: 22px 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #a89ff5;
+    flex-shrink: 0;
+  }
+
+  .logo-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+  }
+
+  .logo-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    margin-left: auto;
+    letter-spacing: 0.5px;
+  }
+
+  .hero {
+    background: var(--ink);
+    padding: 48px 32px 56px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 32px;
+    background: var(--paper);
+    border-radius: 32px 32px 0 0;
+  }
+
+  .hero-label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #a89ff5;
+    margin-bottom: 16px;
+  }
+
+  .hero-title {
+    font-size: 30px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+
+  .hero-sub {
+    font-size: 14px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.7;
+  }
+
+  main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 36px 20px 60px;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 40px;
+  }
+
+  .cat-btn {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 12px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.18s;
+    user-select: none;
+  }
+
+  .cat-btn:hover {
+    border-color: var(--accent);
+    background: var(--accent-light);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+
+  .cat-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-light);
+    box-shadow: 0 0 0 3px rgba(83,72,212,0.12);
+  }
+
+  .cat-icon { font-size: 26px; margin-bottom: 8px; display: block; }
+  .cat-name { font-size: 13px; font-weight: 500; color: var(--ink); display: block; }
+  .cat-desc { font-size: 11px; color: var(--muted); margin-top: 3px; display: block; }
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .pill:hover { border-color: var(--accent); color: var(--accent); }
+  .pill.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .result-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .result-count { font-size: 13px; color: var(--muted); }
+  .result-count span {
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--accent);
+    margin-right: 4px;
+  }
+
+  .jobs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+  }
+
+  .job-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    transition: all 0.18s;
+    animation: fadeUp 0.25s ease forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeUp {
+    from { transform: translateY(10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .job-card:hover {
+    border-color: #c5c0f0;
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+  }
+
+  .job-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .job-emoji { font-size: 28px; line-height: 1; }
+
+  .job-pay {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: #3b6d11;
+    background: #eaf3de;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .job-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; color: var(--ink); }
+
+  .job-summary {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+
+  .job-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+
+  .tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 5px;
+    background: var(--tag-bg);
+    color: var(--accent);
+  }
+
+  .tag.location { background: #e1f5ee; color: #0f6e56; }
+  .tag.time { background: #faeeda; color: #854f0b; }
+  .tag.exp { background: #faece7; color: #993c1d; }
+
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty p { font-size: 14px; line-height: 1.8; }
+
+  .divider { height: 1px; background: var(--border); margin: 32px 0; }
+
+  @media (max-width: 600px) {
+    header { padding: 18px 20px; }
+    .hero { padding: 36px 20px 48px; }
+    .hero-title { font-size: 22px; }
+    .cat-grid { grid-template-columns: repeat(2, 1fr); }
+    .jobs-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-dot"></div>
+  <span class="logo-text">대학생 알바 추천</span>
+  <span class="logo-sub">원하는 조건을 선택하세요</span>
+</header>
+
+<div class="hero">
+  <div class="hero-label">Part-time Job Finder</div>
+  <h1 class="hero-title">내게 맞는 알바를 찾아드릴게요</h1>
+  <p class="hero-sub">일의 종류 · 시간대 · 경력 조건을 선택하면<br>딱 맞는 아르바이트를 추천해 드립니다</p>
+</div>
+
+<main>
+
+  <div class="section-title">일의 종류</div>
+  <div class="cat-grid">
+    <div class="cat-btn active" data-cat="all" onclick="selectCat(this)">
+      <span class="cat-icon">✨</span>
+      <span class="cat-name">전체 보기</span>
+      <span class="cat-desc">모든 알바</span>
+    </div>
+    <div class="cat-btn" data-cat="indoor" onclick="selectCat(this)">
+      <span class="cat-icon">🏠</span>
+      <span class="cat-name">실내</span>
+      <span class="cat-desc">카페·매장·사무</span>
+    </div>
+    <div class="cat-btn" data-cat="outdoor" onclick="selectCat(this)">
+      <span class="cat-icon">🌿</span>
+      <span class="cat-name">실외</span>
+      <span class="cat-desc">배달·행사·스포츠</span>
+    </div>
+    <div class="cat-btn" data-cat="service" onclick="selectCat(this)">
+      <span class="cat-icon">🤝</span>
+      <span class="cat-name">서비스직</span>
+      <span class="cat-desc">손님 응대 중심</span>
+    </div>
+    <div class="cat-btn" data-cat="remote" onclick="selectCat(this)">
+      <span class="cat-icon">💻</span>
+      <span class="cat-name">재택·온라인</span>
+      <span class="cat-desc">장소 자유</span>
+    </div>
+    <div class="cat-btn" data-cat="physical" onclick="selectCat(this)">
+      <span class="cat-icon">💪</span>
+      <span class="cat-name">체력직</span>
+      <span class="cat-desc">높은 급여</span>
+    </div>
+    <div class="cat-btn" data-cat="creative" onclick="selectCat(this)">
+      <span class="cat-icon">🎨</span>
+      <span class="cat-name">전공 활용</span>
+      <span class="cat-desc">스펙·경험 쌓기</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-title">추가 조건</div>
+  <div class="filter-row">
+    <div class="pill on" data-filter="time" data-val="all" onclick="toggleFilter(this)">⏰ 시간대 전체</div>
+    <div class="pill" data-filter="time" data-val="morning" onclick="toggleFilter(this)">🌅 오전형</div>
+    <div class="pill" data-filter="time" data-val="night" onclick="toggleFilter(this)">🌙 야간·심야</div>
+    <div class="pill" data-filter="time" data-val="weekend" onclick="toggleFilter(this)">📅 주말만</div>
+    <div class="pill" data-filter="time" data-val="flexible" onclick="toggleFilter(this)">🔄 자유 시간</div>
+  </div>
+  <div class="filter-row">
+    <div class="pill on" data-filter="exp" data-val="all" onclick="toggleFilter(this)">📋 경력 전체</div>
+    <div class="pill" data-filter="exp" data-val="none" onclick="toggleFilter(this)">🌱 무경험 가능</div>
+    <div class="pill" data-filter="exp" data-val="some" onclick="toggleFilter(this)">📌 경험 우대</div>
+  </div>
+
+  <div class="result-header">
+    <div class="result-count"><span id="count">0</span>개의 알바를 찾았어요</div>
+  </div>
+  <div class="jobs-grid" id="jobs-grid"></div>
+
+</main>
+
+<script>
+const JOBS = [
+  { name: '카페 바리스타', emoji: '☕', cat: ['indoor','service'], time: ['morning','flexible'], exp: 'none',
+    pay: '시급 9,860~', summary: '음료 제조 및 홀 관리. 커피를 좋아한다면 즐겁게 일할 수 있어요.', tags: ['실내','서비스직','카페'] },
+  { name: '편의점 캐셔', emoji: '🏪', cat: ['indoor','service'], time: ['night','morning','weekend','flexible'], exp: 'none',
+    pay: '시급 9,860~', summary: '야간 근무 시 야간수당 추가. 혼자 일하는 시간이 많아 공부도 가능해요.', tags: ['실내','야간가능','혼자근무'] },
+  { name: '배달 라이더', emoji: '🛵', cat: ['outdoor','physical'], time: ['flexible','morning','night'], exp: 'none',
+    pay: '건당 3,000~', summary: '자유로운 시간 관리 가능. 많이 뛸수록 수입 UP. 오토바이 면허 필요.', tags: ['실외','자유시간','수입가변'] },
+  { name: '과외 선생님', emoji: '📚', cat: ['creative','remote'], time: ['flexible','weekend'], exp: 'some',
+    pay: '시간당 25,000~', summary: '전공·잘하는 과목 활용. 스케줄을 직접 조율할 수 있어요.', tags: ['재택가능','전공활용','고급여'] },
+  { name: '행사 스태프', emoji: '🎪', cat: ['outdoor','service'], time: ['weekend'], exp: 'none',
+    pay: '일당 80,000~', summary: '페스티벌·박람회 등 단기 행사 진행 보조. 경험과 추억 모두 챙길 수 있어요.', tags: ['실외','단기','주말'] },
+  { name: '학원 보조 강사', emoji: '🏫', cat: ['creative','service'], time: ['morning','flexible'], exp: 'some',
+    pay: '시급 12,000~', summary: '초·중등 학원 수업 보조. 교육 관련 전공자라면 스펙에도 도움이 돼요.', tags: ['실내','교육','스펙'] },
+  { name: '데이터 입력·라벨링', emoji: '🖱️', cat: ['remote'], time: ['flexible'], exp: 'none',
+    pay: '시급 10,000~', summary: 'AI 학습 데이터 작업. 집에서 자유롭게, 인터넷만 있으면 돼요.', tags: ['재택','자유시간','무경험'] },
+  { name: '번역·교정 알바', emoji: '🌐', cat: ['remote','creative'], time: ['flexible'], exp: 'some',
+    pay: '장당 3,000~', summary: '영어·일본어 등 외국어 능력 활용. 어학 전공자에게 특히 추천해요.', tags: ['재택','전공활용','외국어'] },
+  { name: '레스토랑 서빙', emoji: '🍽️', cat: ['indoor','service'], time: ['morning','night','flexible'], exp: 'none',
+    pay: '시급 9,860~', summary: '주문 접수·서빙·정리. 팁 문화가 있는 곳은 수입이 더 높아요.', tags: ['실내','서비스직','팁가능'] },
+  { name: '이삿짐 보조', emoji: '📦', cat: ['physical','outdoor'], time: ['morning','weekend'], exp: 'none',
+    pay: '일당 130,000~', summary: '체력 소모가 크지만 단기 고수입. 주말에 짧게 뛰기 좋아요.', tags: ['실외','체력직','고수입'] },
+  { name: 'SNS 콘텐츠 작성', emoji: '📱', cat: ['remote','creative'], time: ['flexible'], exp: 'none',
+    pay: '건당 5,000~', summary: '블로그·인스타 포스팅 대행. 글 쓰는 걸 좋아한다면 딱이에요.', tags: ['재택','크리에이티브','자유시간'] },
+  { name: '주유소 주유원', emoji: '⛽', cat: ['outdoor','service'], time: ['morning','night','weekend'], exp: 'none',
+    pay: '시급 9,860~', summary: '야간 심야 근무 가능. 업무가 단순해서 빠르게 익힐 수 있어요.', tags: ['실외','야간가능','단순업무'] },
+  { name: '공연·전시 스태프', emoji: '🎭', cat: ['outdoor','service','creative'], time: ['weekend','flexible'], exp: 'none',
+    pay: '시급 10,500~', summary: '미술관·공연장 안내. 문화예술에 관심 있다면 보람 있는 알바예요.', tags: ['문화','실내외','경험치UP'] },
+  { name: '웹툰·디자인 보조', emoji: '🎨', cat: ['creative','remote'], time: ['flexible'], exp: 'some',
+    pay: '월 500,000~', summary: '디자인·미술 전공자 대상. 포트폴리오 쌓기에 최고예요.', tags: ['재택','전공필수','포트폴리오'] },
+  { name: '스터디카페 스태프', emoji: '📖', cat: ['indoor','service'], time: ['night','morning'], exp: 'none',
+    pay: '시급 9,860~', summary: '야간에 공부하면서 알바 가능. 조용한 환경을 좋아한다면 추천해요.', tags: ['실내','야간','공부가능'] },
+  { name: '택배 분류 보조', emoji: '🚚', cat: ['physical','indoor'], time: ['morning','night'], exp: 'none',
+    pay: '일당 100,000~', summary: '새벽·야간 단기 작업. 짧은 시간에 고수입을 원한다면 추천해요.', tags: ['체력직','새벽','고수입'] },
+];
+
+let currentCat = 'all';
+let currentTime = 'all';
+let currentExp = 'all';
+
+function selectCat(el) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  currentCat = el.dataset.cat;
+  render();
+}
+
+function toggleFilter(el) {
+  const filter = el.dataset.filter;
+  document.querySelectorAll('.pill[data-filter="' + filter + '"]').forEach(p => p.classList.remove('on'));
+  el.classList.add('on');
+  if (filter === 'time') currentTime = el.dataset.val;
+  if (filter === 'exp') currentExp = el.dataset.val;
+  render();
+}
+
+function render() {
+  const grid = document.getElementById('jobs-grid');
+  const filtered = JOBS.filter(j => {
+    const catOK = currentCat === 'all' || j.cat.includes(currentCat);
+    const timeOK = currentTime === 'all' || j.time.includes(currentTime);
+    const expOK = currentExp === 'all' || j.exp === currentExp;
+    return catOK && timeOK && expOK;
+  });
+
+  document.getElementById('count').textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🔍</div><p>조건에 맞는 알바가 없어요<br>필터를 조정해 보세요</p></div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(function(j, i) {
+    const extraTags = [];
+    if (j.time.includes('night')) extraTags.push('<span class="tag time">야간가능</span>');
+    if (j.exp === 'none') extraTags.push('<span class="tag exp">무경험OK</span>');
+    if (j.cat.includes('remote')) extraTags.push('<span class="tag location">재택가능</span>');
+    return '<div class="job-card" style="animation-delay:' + (i * 0.04) + 's">' +
+      '<div class="job-top"><span class="job-emoji">' + j.emoji + '</span><span class="job-pay">' + j.pay + '</span></div>' +
+      '<div class="job-name">' + j.name + '</div>' +
+      '<div class="job-summary">' + j.summary + '</div>' +
+      '<div class="job-tags">' + j.tags.map(function(t){ return '<span class="tag">' + t + '</span>'; }).join('') + extraTags.join('') + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+render();
+</script>
+</body>
+</html>
